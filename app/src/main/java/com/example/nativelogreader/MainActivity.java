@@ -75,8 +75,8 @@ public class MainActivity extends Activity {
         StringBuilder humanTranslation = new StringBuilder();
         List<ErrorPattern> knownErrors = ErrorDatabase.getKnownPatterns();
 
-        for (ErrorPattern err : knownErrors) {
-            if (content.contains(err.pattern)) {
+        for (ErrorPattern err : knownErrors) {  
+        if (content.toLowerCase().contains(err.pattern.toLowerCase())) {
                 humanTranslation.append("🚨 ERRO DETECTADO: ").append(err.errorName).append("\n");
                 humanTranslation.append("👉 O que significa: ").append(err.meaning).append("\n");
                 humanTranslation.append("🔍 Causas prováveis:\n");
