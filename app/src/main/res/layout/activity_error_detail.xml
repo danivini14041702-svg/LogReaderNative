@@ -5,18 +5,26 @@
     android:orientation="vertical"
     android:background="#1A1A1A">
 
+    <!-- TOPO: Menu Sanduíche e Botão do Título -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="12dp">
+        android:padding="8dp"
+        android:gravity="center_vertical">
 
+        <!-- Botão Sanduíche Discreto (☰) -->
         <Button
-            android:id="@+id/btnVoltar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="← Voltar"/>
+            android:id="@+id/btnMenuSanduiche"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:text="☰"
+            android:textSize="24sp"
+            android:textColor="#FFFFFF"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Menu de opções" />
 
+        <!-- Botão que mostra o Erro Atual e Pula para o Próximo -->
         <Button
             android:id="@+id/btnMenuErro"
             android:layout_width="0dp"
@@ -25,10 +33,12 @@
             android:layout_marginStart="8dp"
             android:backgroundTint="#8B0000"
             android:textColor="#FFFFFF"
-            android:textSize="13sp"
+            android:textSize="14sp"
+            android:padding="12dp"
             android:text="🚨 Erro  ▼"/>
     </LinearLayout>
 
+    <!-- CONTEÚDO CENTRAL -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -63,32 +73,26 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_marginBottom="20dp"/>
+                android:layout_marginBottom="24dp"/>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="🔗 Onde pesquisar mais:"
+                android:text="🔗 Toque para pesquisar no Google:"
                 android:textColor="#FFD700"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:layout_marginBottom="8dp"/>
 
+            <!-- Aqui entram os links clicáveis -->
             <LinearLayout
                 android:id="@+id/containerFontes"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"/>
+                android:orientation="vertical"
+                android:layout_marginBottom="20dp"/>
 
         </LinearLayout>
     </ScrollView>
-
-    <Button
-        android:id="@+id/btnCompartilhar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="📤 Compartilhar este erro"
-        android:padding="16dp"
-        android:layout_margin="12dp"/>
 
 </LinearLayout>
