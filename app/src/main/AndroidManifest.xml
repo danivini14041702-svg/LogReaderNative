@@ -1,28 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.nativelogreader">
-
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
         android:allowBackup="true"
         android:label="Log Reader"
-        android:theme="@android:style/Theme.Material.NoActionBar">
-
-        <!-- Essa é a tela principal, que abre o app -->
-        <activity
-            android:name=".MainActivity"
-            android:exported="true">
+        android:theme="@style/Theme.AppCompat.DayNight.NoActionBar">
+        
+        <activity android:name=".MainActivity" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <!-- Essa é a tela de detalhes, que abre quando clica no cartão -->
-        <activity
-            android:name=".ErrorDetailActivity"
-            android:exported="false"
-            android:theme="@android:style/Theme.Material.NoActionBar" />
-
+        
+        <activity android:name=".ErrorDetailActivity" android:exported="false" />
     </application>
-
 </manifest>
