@@ -1,10 +1,14 @@
 package com.example.nativelogreader;
 
+import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -54,12 +58,19 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btnPerguntarGemini).setOnClickListener(v -> {
             String pergunta = edtGemini.getText().toString().trim();
             if (!pergunta.isEmpty()) {
-                String url = "https://google.com/search?udm=50&q=" + Uri.encode(pergunta);
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                abrirGemini(pergunta);
             } else {
                 Toast.makeText(this, "Digite uma pergunta primeiro!", Toast.LENGTH_SHORT).show();
             }
         });
+
+        // Lógica dos Links Úteis
+        findViewById(R.id.linkStackOverflow).setOnClickListener(v -> abrirLink("https://stackoverflow.com/"));
+        findViewById(R.id.linkXDA).setOnClickListener(v -> abrirLink("https://xdaforums.com/"));
+        findViewById(R.id.linkForumAndroid).setOnClickListener(v -> abrirLink("https://android.stackexchange.com/"));
+
+        // Lógica do Botão Como Usar
+        findViewById(R.id.btnComoUsar).setOnClickListener(v -> mostrarTutorial());
 
         findViewById(R.id.btnCompartilharApp).setOnClickListener(v -> {
             Intent intent = new Intent(Intent.ACTION_SEND);
@@ -75,6 +86,40 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void mostrarTutorial() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_tutorial, null);
+        builder.setView(dialogView);
+        
+        AlertDialog dialog = builder.create();
+        // Deixa o fundo do dialog transparente para pegar o tema do XML
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
+        dialog.show();
+
+        dialogView.findViewById(R.id.btnEntendi).setOnClickListener(v -> dialog.dismiss());
+    }
+
+    private void abrirGemini(String pergunta) {
+        String url = "https://google.com/search?udm=50&q=" + Uri.encode(pergunta);
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        intent.setPackage("com.android.chrome"); 
+        try {
+            startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            intent.setPackage(null); 
+            startActivity(intent);
+        }
+    }
+
+    private void abrirLink(String url) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        startActivity(intent);
+    }
+
+    // --- MÉTODOS EXISTENTES DE LOG (onActivityResult, processLogFile, analyzeLog, criarCartaoDeErro) ---
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
