@@ -2,9 +2,10 @@ package com.example.nativelogreader;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.TypedValue;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -34,33 +35,29 @@ public class ErrorDetailActivity extends AppCompatActivity {
         if (currentIndex < 0 || currentIndex >= lista.size()) currentIndex = 0;
 
         findViewById(R.id.btnVoltar).setOnClickListener(v -> finish());
-
-        // Abrir o menu lateral
         findViewById(R.id.btnMenuLateralDetalhe).setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
 
-        // Lógica do Tema no menu
         SharedPreferences prefs = getSharedPreferences("config", MODE_PRIVATE);
         Switch switchTema = findViewById(R.id.switchTemaDetalhe);
         switchTema.setChecked(prefs.getBoolean("dark_mode", true));
         switchTema.setOnCheckedChangeListener((buttonView, isChecked) -> {
             prefs.edit().putBoolean("dark_mode", isChecked).apply();
             AppCompatDelegate.setDefaultNightMode(isChecked ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
-            recreate(); // Recria a tela para aplicar as cores
+            recreate();
         });
 
-        // Lógica do Gemini
         EditText edtGemini = findViewById(R.id.edtGeminiDetalhe);
         findViewById(R.id.btnPerguntarGeminiDetalhe).setOnClickListener(v -> {
             String pergunta = edtGemini.getText().toString().trim();
             if (!pergunta.isEmpty()) {
-                String url = "https://gemini.google.com/app?q=" + Uri.encode(pergunta);
+                // URL corrigida para abrir no Chrome com a IA do Google
+                String url = "https://google.com/search?udm=50&q=" + Uri.encode(pergunta);
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
             } else {
                 Toast.makeText(this, "Digite uma pergunta!", Toast.LENGTH_SHORT).show();
             }
         });
 
-        // Botão Dropdown de Erros
         Button btnDropdown = findViewById(R.id.btnDropdownErro);
         btnDropdown.setOnClickListener(v -> {
             PopupMenu popup = new PopupMenu(this, v);
@@ -91,19 +88,18 @@ public class ErrorDetailActivity extends AppCompatActivity {
         TextView tvDesc = findViewById(R.id.tvDescricao);
         tvDesc.setText(err.description + "\n\n💡 " + err.tip);
 
-        // Pega a cor de texto correta do tema (preto no claro, branco no escuro)
-        TypedValue typedValue = new TypedValue();
-        getTheme().resolveAttribute(android.R.attr.textColorPrimary, typedValue, true);
-        int textColor = typedValue.data;
+        // Verifica se o modo escuro está ativo para escolher a cor do texto corretamente
+        boolean isDarkMode = (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
+        int corTexto = isDarkMode ? Color.WHITE : Color.BLACK;
 
         LinearLayout containerCausas = findViewById(R.id.containerCausas);
         containerCausas.removeAllViews();
         for (String causa : err.causes) {
             TextView t = new TextView(this);
             t.setText("• " + causa);
-            t.setTextColor(textColor);
+            t.setTextColor(corTexto); // Cor corrigida aqui
             t.setTextSize(15f);
-            t.setTextIsSelectable(true); // Ativa a seleção do texto aqui também!
+            t.setTextIsSelectable(true); // Permite copiar
             t.setPadding(0, 8, 0, 8);
             containerCausas.addView(t);
         }
@@ -115,7 +111,7 @@ public class ErrorDetailActivity extends AppCompatActivity {
             t.setText("🔎 " + fonte);
             t.setTextColor(0xFF1976D2); // Azul
             t.setTextSize(15f);
-            t.setTextIsSelectable(true); // Ativa a seleção do texto aqui também!
+            t.setTextIsSelectable(true); // Permite copiar
             t.setPadding(0, 12, 0, 12);
             
             t.setOnClickListener(v -> {
