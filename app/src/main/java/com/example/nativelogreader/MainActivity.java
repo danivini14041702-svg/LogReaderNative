@@ -1,32 +1,53 @@
 package com.example.nativelogreader;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.drawerlayout.widget.DrawerLayout;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
-import java.util.regex.Pattern;
 
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity {
     private static final int PICK_LOG_FILE = 1;
     private TextView tvSummary;
     private LinearLayout containerErros;
+    private DrawerLayout drawerLayout;
+    private SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Carrega o tema salvo antes de criar a tela
+        prefs = getSharedPreferences("config", MODE_PRIVATE);
+        boolean isDarkMode = prefs.getBoolean("dark_mode", true);
+        AppCompatDelegate.setDefaultNightMode(isDarkMode ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        drawerLayout = findViewById(R.id.drawerLayout);
         tvSummary = findViewById(R.id.tvSummary);
         containerErros = findViewById(R.id.containerErros);
+        Switch switchTema = findViewById(R.id.switchTema);
+        
+        switchTema.setChecked(isDarkMode);
+
+        findViewById(R.id.btnMenuLateral).setOnClickListener(v -> drawerLayout.openDrawer(Gravity.START));
+
+        switchTema.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            prefs.edit().putBoolean("dark_mode", isChecked).apply();
+            AppCompatDelegate.setDefaultNightMode(isChecked ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
+        });
 
         findViewById(R.id.btnSelectFile).setOnClickListener(v -> {
             Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -58,17 +79,16 @@ public class MainActivity extends Activity {
     }
 
     private void analyzeLog(String content) {
-        containerErros.removeAllViews(); // Limpa a tela
-        ErrorDatabase.errosEncontrados.clear(); // Limpa a lista global
+        containerErros.removeAllViews();
+        ErrorDatabase.errosEncontrados.clear();
         List<ErrorPattern> knownErrors = ErrorDatabase.getKnownPatterns();
         int encontrados = 0;
 
-        // Aqui está a correção do loop para pegar o índice
         for (int i = 0; i < knownErrors.size(); i++) {
             ErrorPattern err = knownErrors.get(i);
             if (content.toLowerCase().contains(err.pattern.toLowerCase())) {
-                ErrorDatabase.errosEncontrados.add(err); // Salva na memória global
-                criarCartaoDeErro(err, ErrorDatabase.errosEncontrados.size() - 1); // Passa o índice
+                ErrorDatabase.errosEncontrados.add(err);
+                criarCartaoDeErro(err, ErrorDatabase.errosEncontrados.size() - 1);
                 encontrados++;
             }
         }
@@ -84,16 +104,17 @@ public class MainActivity extends Activity {
         Button card = new Button(this);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        params.setMargins(0, 0, 0, 24);
+        params.setMargins(0, 0, 0, 16);
         card.setLayoutParams(params);
-        
+
+        // Cores de fundo baseadas na gravidade (sem texto amarelo!)
         if (err.severity.equals("CRITICO")) {
-            card.setBackgroundColor(Color.parseColor("#8B0000"));
+            card.setBackgroundColor(0xFF8B0000); // Vermelho escuro
         } else {
-            card.setBackgroundColor(Color.parseColor("#B8860B"));
+            card.setBackgroundColor(0xFFFF8C00); // Laranja escuro (Alto)
         }
-        
-        card.setTextColor(Color.WHITE);
+
+        card.setTextColor(0xFFFFFFFF);
         card.setTextSize(16f);
         card.setGravity(Gravity.CENTER_VERTICAL | Gravity.START);
         card.setPadding(30, 30, 30, 30);
