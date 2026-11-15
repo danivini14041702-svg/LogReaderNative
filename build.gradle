@@ -1,14 +1,4 @@
-apply plugin: 'com.android.application'
-
-android {
-    namespace 'com.example.nativelogreader'
-    compileSdk 34
-
-    defaultConfig {
-        applicationId "com.example.nativelogreader"
-        minSdk 24
-        targetSdk 34
-        versionCode 1
-        versionName "1.0"
-    }
+// Arquivo da RAIZ. Ele só avisa que o plugin existe.
+plugins {
+    id 'com.android.application' version '8.1.0' apply false
 }
