@@ -3,9 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#1A1A1A">
+    android:background="?attr/colorBackground">
 
-    <!-- TOPO: Menu Sanduíche e Botão do Título -->
+    <!-- TOPO -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -13,36 +13,33 @@
         android:padding="8dp"
         android:gravity="center_vertical">
 
-        <!-- Botão Sanduíche Discreto (☰) -->
         <Button
-            android:id="@+id/btnMenuSanduiche"
+            android:id="@+id/btnVoltar"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:text="☰"
+            android:text="←"
             android:textSize="24sp"
-            android:textColor="#FFFFFF"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Menu de opções" />
+            android:textColor="?attr/colorOnBackground"
+            android:background="?attr/selectableItemBackgroundBorderless" />
 
-        <!-- Botão que mostra o Erro Atual e Pula para o Próximo -->
+        <!-- Botão Dropdown (Selecione o Log) -->
         <Button
-            android:id="@+id/btnMenuErro"
+            android:id="@+id/btnDropdownErro"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginStart="8dp"
-            android:backgroundTint="#8B0000"
+            android:backgroundTint="?attr/colorPrimary"
             android:textColor="#FFFFFF"
             android:textSize="14sp"
             android:padding="12dp"
-            android:text="🚨 Erro  ▼"/>
+            android:text="Selecione o Log ▼"/>
     </LinearLayout>
 
-    <!-- CONTEÚDO CENTRAL -->
+    <!-- TEXTO ROLÁVEL (Ocupa todo o resto da tela) -->
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="match_parent"
         android:padding="16dp">
 
         <LinearLayout
@@ -54,19 +51,19 @@
                 android:id="@+id/tvDescricao"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="#FFFFFF"
+                android:textColor="?attr/colorOnBackground"
                 android:textSize="17sp"
-                android:lineSpacingExtra="4dp"
-                android:layout_marginBottom="20dp"/>
+                android:lineSpacingExtra="6dp"
+                android:layout_marginBottom="24dp"/>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="🔧 Causas prováveis:"
-                android:textColor="#FFD700"
+                android:textColor="?attr/colorPrimary"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:layout_marginBottom="8dp"/>
+                android:layout_marginBottom="12dp"/>
 
             <LinearLayout
                 android:id="@+id/containerCausas"
@@ -78,21 +75,19 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="🔗 Toque para pesquisar no Google:"
-                android:textColor="#FFD700"
+                android:text="🔗 Onde pesquisar a solução:"
+                android:textColor="?attr/colorPrimary"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:layout_marginBottom="8dp"/>
+                android:layout_marginBottom="12dp"/>
 
-            <!-- Aqui entram os links clicáveis -->
             <LinearLayout
                 android:id="@+id/containerFontes"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_marginBottom="20dp"/>
+                android:layout_marginBottom="30dp"/>
 
         </LinearLayout>
     </ScrollView>
-
 </LinearLayout>
