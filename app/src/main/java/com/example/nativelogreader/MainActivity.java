@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -42,12 +43,29 @@ public class MainActivity extends AppCompatActivity {
         
         switchTema.setChecked(isDarkMode);
 
-        // Correção do Lint aqui: GravityCompat.START
         findViewById(R.id.btnMenuLateral).setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
 
         switchTema.setOnCheckedChangeListener((buttonView, isChecked) -> {
             prefs.edit().putBoolean("dark_mode", isChecked).apply();
             AppCompatDelegate.setDefaultNightMode(isChecked ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
+        });
+
+        EditText edtGemini = findViewById(R.id.edtGemini);
+        findViewById(R.id.btnPerguntarGemini).setOnClickListener(v -> {
+            String pergunta = edtGemini.getText().toString().trim();
+            if (!pergunta.isEmpty()) {
+                String url = "https://google.com/search?udm=50&q=" + Uri.encode(pergunta);
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+            } else {
+                Toast.makeText(this, "Digite uma pergunta primeiro!", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        findViewById(R.id.btnCompartilharApp).setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.setType("text/plain");
+            intent.putExtra(Intent.EXTRA_TEXT, "Conheça o Log Reader! O app que traduz erros de Android para o português. (Manual do Mundo para Idiotas)");
+            startActivity(Intent.createChooser(intent, "Compartilhar App"));
         });
 
         findViewById(R.id.btnSelectFile).setOnClickListener(v -> {
