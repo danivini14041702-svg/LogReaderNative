@@ -2,92 +2,89 @@ package com.example.nativelogreader;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.Button;
-import android.widget.PopupMenu;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import java.util.List;
 
 public class ErrorDetailActivity extends Activity {
-    private int erroAtualIndex;
+    private int currentIndex = 0;
+    private List<ErrorPattern> lista;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_error_detail);
 
-        erroAtualIndex = getIntent().getIntExtra("index", 0);
-        
-        Button btnErrorSelector = findViewById(R.id.btnErrorSelector);
-        Button btnBack = findViewById(R.id.btnBack);
-        Button btnShare = findViewById(R.id.btnShare);
-        Button btnMenu = findViewById(R.id.btnMenu); // Menu da direita
+        lista = ErrorDatabase.errosEncontrados;
+        currentIndex = getIntent().getIntExtra("index", 0);
+        if (currentIndex < 0 || currentIndex >= lista.size()) currentIndex = 0;
 
-        atualizarTela();
+        findViewById(R.id.btnVoltar).setOnClickListener(v -> finish());
 
-        // 1. Ação do Seletor (Bottom Sheet / Popup)
-        btnErrorSelector.setOnClickListener(v -> {
-            PopupMenu popup = new PopupMenu(this, btnErrorSelector);
-            for (int i = 0; i < ErrorDatabase.errosEncontrados.size(); i++) {
-                ErrorPattern err = ErrorDatabase.errosEncontrados.get(i);
-                // Adiciona no menu, mostrando o título colorido pela gravidade
-                popup.getMenu().add(0, i, i, (err.severity.equals("CRITICO") ? "🔴 " : "🟡 ") + err.title);
-            }
-            
-            popup.setOnMenuItemClickListener(item -> {
-                // Troca para o erro selecionado
-                erroAtualIndex = item.getItemId();
-                atualizarTela();
-                return true;
-            });
-            popup.show();
-        });
-
-        // 2. Ação do Menu (Configurações)
+        Button btnMenu = findViewById(R.id.btnMenuErro);
         btnMenu.setOnClickListener(v -> {
-            PopupMenu menu = new PopupMenu(this, btnMenu);
-            menu.getMenu().add("Tema Escuro (Padrão)");
-            menu.getMenu().add("Ajuda");
-            menu.getMenu().add("Sobre o App");
-            menu.show();
+            if (lista.size() <= 1) return;
+            currentIndex = (currentIndex + 1) % lista.size(); // pula pro próximo
+            preencherTela();
         });
 
-        // 3. Compartilhar
-        btnShare.setOnClickListener(v -> {
-            ErrorPattern err = ErrorDatabase.errosEncontrados.get(erroAtualIndex);
-            String texto = "🚨 " + err.title + "\n\n" + err.meaning + "\n\nCausas:\n- " + String.join("\n- ", err.causes);
-            Intent shareIntent = new Intent(Intent.ACTION_SEND);
-            shareIntent.setType("text/plain");
-            shareIntent.putExtra(Intent.EXTRA_TEXT, texto);
-            startActivity(Intent.createChooser(shareIntent, "Compartilhar erro..."));
-        });
-
-        // 4. Voltar
-        btnBack.setOnClickListener(v -> finish());
+        findViewById(R.id.btnCompartilhar).setOnClickListener(v -> compartilhar());
     }
 
-    private void atualizarTela() {
-        ErrorPattern err = ErrorDatabase.errosEncontrados.get(erroAtualIndex);
-        
-        Button btnErrorSelector = findViewById(R.id.btnErrorSelector);
-        TextView tvContent = findViewById(R.id.tvDetailContent);
+    @Override
+    protected void onResume() {
+        super.onResume();
+        preencherTela();
+    }
 
-        // Muda o texto e a cor do botão do seletor dependendo da gravidade
-        btnErrorSelector.setText(err.title + " 🔽");
-        if (err.severity.equals("CRITICO")) {
-            btnErrorSelector.setTextColor(Color.parseColor("#FF6B6B"));
-        } else {
-            btnErrorSelector.setTextColor(Color.parseColor("#FBBF24"));
+    private void preencherTela() {
+        if (lista.isEmpty()) return;
+        ErrorPattern err = lista.get(currentIndex);
+
+        ((Button) findViewById(R.id.btnMenuErro)).setText(
+            "🚨 " + err.title + "  ▼  (" + (currentIndex + 1) + "/" + lista.size() + ")");
+
+        TextView tvDesc = findViewById(R.id.tvDescricao);
+        tvDesc.setText(err.description + "\n\n💡 " + err.tip);
+
+        LinearLayout containerCausas = findViewById(R.id.containerCausas);
+        containerCausas.removeAllViews();
+        for (String causa : err.causes) {
+            TextView t = new TextView(this);
+            t.setText("• " + causa);
+            t.setTextSize(15f);
+            t.setPadding(0, 8, 0, 8);
+            containerCausas.addView(t);
         }
 
-        // Monta o texto da explicação
-        StringBuilder texto = new StringBuilder();
-        texto.append("👉 TRADUZINDO:\n").append(err.meaning).append("\n\n");
-        texto.append("🔍 CAUSAS PROVÁVEIS:\n");
-        for (String causa : err.causes) texto.append("   • ").append(causa).append("\n");
-        texto.append("\n🛠️ FONTES PARA PESQUISA:\n");
-        for (String fonte : err.sources) texto.append("   • ").append(fonte).append("\n");
+        LinearLayout containerFontes = findViewById(R.id.containerFontes);
+        containerFontes.removeAllViews();
+        for (String fonte : err.sources) {
+            TextView t = new TextView(this);
+            t.setText("🔎 " + fonte);
+            t.setTextSize(14f);
+            t.setPadding(0, 6, 0, 6);
+            containerFontes.addView(t);
+        }
+    }
 
-        tvContent.setText(texto.toString());
+    private void compartilhar() {
+        if (lista.isEmpty()) return;
+        ErrorPattern err = lista.get(currentIndex);
+        StringBuilder sb = new StringBuilder();
+        sb.append("🚨 ").append(err.title).append("\n\n");
+        sb.append(err.description).append("\n\n");
+        sb.append("💡 ").append(err.tip).append("\n\n");
+        sb.append("Causas prováveis:\n");
+        for (String c : err.causes) sb.append("• ").append(c).append("\n");
+        sb.append("\nFontes de pesquisa:\n");
+        for (String s : err.sources) sb.append("• ").append(s).append("\n");
+
+        Intent i = new Intent(Intent.ACTION_SEND);
+        i.setType("text/plain");
+        i.putExtra(Intent.EXTRA_TEXT, sb.toString());
+        startActivity(Intent.createChooser(i, "Compartilhar erro"));
     }
 }
