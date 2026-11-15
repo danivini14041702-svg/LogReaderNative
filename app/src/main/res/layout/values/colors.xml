@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Cores do Tema -->
+    <color name="colorPrimary">#1976D2</color>
+    <color name="colorPrimaryDark">#115293</color>
+    <color name="colorAccent">#64B5F6</color>
+    
+    <!-- Cores de Fundo Claro -->
+    <color name="bgLight">#F5F5F5</color>
+    <color name="textLight">#212121</color>
+    
+    <!-- Cores de Fundo Escuro -->
+    <color name="bgDark">#121212</color>
+    <color name="textDark">#E0E0E0</color>
+</resources>
