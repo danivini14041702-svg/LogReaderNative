@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="?android:attr/colorBackground">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Como usar o Log Reader"
+        android:textColor="?android:attr/textColorPrimary"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="24dp"
+        android:gravity="center"/>
+
+    <!-- Passo 1 -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="1. 📁 Toque em 'Selecionar arquivo de log' e escolha o arquivo .txt ou .log do seu celular."
+        android:textColor="?android:attr/textColorPrimary"
+        android:textSize="16sp"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- Passo 2 -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="2. 🚨 O app vai ler o arquivo e mostrar cartões coloridos. Vermelho é crítico, Laranja é aviso."
+        android:textColor="?android:attr/textColorPrimary"
+        android:textSize="16sp"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- Passo 3 -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="3. 👆 Toque em um cartão para traduzir o erro e ver onde pesquisar a solução."
+        android:textColor="?android:attr/textColorPrimary"
+        android:textSize="16sp"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- Passo 4 -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="4. 🤖 Ficou com dúvida em um termo? Abra o Menu e pergunte ao Gemini!"
+        android:textColor="?android:attr/textColorPrimary"
+        android:textSize="16sp"
+        android:layout_marginBottom="32dp"/>
+
+    <Button
+        android:id="@+id/btnEntendi"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Entendi!"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#1976D2"
+        android:textStyle="bold"/>
+</LinearLayout>
