@@ -1,6 +1,12 @@
-apply plugin: 'com.android.application'
+// Arquivo da pasta APP. Aqui a gente aplica o plugin de verdade.
+plugins {
+    id 'com.android.application'
+}
+
 android {
+    namespace 'com.example.nativelogreader'
     compileSdk 34
+
     defaultConfig {
         applicationId "com.example.nativelogreader"
         minSdk 24
