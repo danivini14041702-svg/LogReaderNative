@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -27,7 +28,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // Carrega o tema salvo antes de criar a tela
         prefs = getSharedPreferences("config", MODE_PRIVATE);
         boolean isDarkMode = prefs.getBoolean("dark_mode", true);
         AppCompatDelegate.setDefaultNightMode(isDarkMode ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
@@ -42,7 +42,8 @@ public class MainActivity extends AppCompatActivity {
         
         switchTema.setChecked(isDarkMode);
 
-        findViewById(R.id.btnMenuLateral).setOnClickListener(v -> drawerLayout.openDrawer(Gravity.START));
+        // Correção do Lint aqui: GravityCompat.START
+        findViewById(R.id.btnMenuLateral).setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
 
         switchTema.setOnCheckedChangeListener((buttonView, isChecked) -> {
             prefs.edit().putBoolean("dark_mode", isChecked).apply();
@@ -107,11 +108,10 @@ public class MainActivity extends AppCompatActivity {
         params.setMargins(0, 0, 0, 16);
         card.setLayoutParams(params);
 
-        // Cores de fundo baseadas na gravidade (sem texto amarelo!)
         if (err.severity.equals("CRITICO")) {
-            card.setBackgroundColor(0xFF8B0000); // Vermelho escuro
+            card.setBackgroundColor(0xFF8B0000);
         } else {
-            card.setBackgroundColor(0xFFFF8C00); // Laranja escuro (Alto)
+            card.setBackgroundColor(0xFFFF8C00);
         }
 
         card.setTextColor(0xFFFFFFFF);
