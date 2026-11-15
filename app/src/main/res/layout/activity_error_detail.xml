@@ -3,69 +3,92 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp"
-    android:background="#121212">
+    android:background="#1A1A1A">
 
-    <!-- CABEÇALHO (Área 1 e 3 da sua imagem) -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginBottom="16dp">
+        android:padding="12dp">
 
-        <!-- Botão Voltar (Esquerda) -->
         <Button
-            android:id="@+id/btnBack"
+            android:id="@+id/btnVoltar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="←"
-            android:textSize="20sp"
-            android:textColor="#FFFFFF"
-            android:background="?android:attr/selectableItemBackground"/>
+            android:text="← Voltar"/>
 
-        <!-- Botão do Seletor de Erro (Centro) -->
         <Button
-            android:id="@+id/btnErrorSelector"
+            android:id="@+id/btnMenuErro"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Título do Erro 🔽"
-            android:textSize="18sp"
-            android:textStyle="bold"
+            android:layout_marginStart="8dp"
+            android:backgroundTint="#8B0000"
             android:textColor="#FFFFFF"
-            android:background="?android:attr/selectableItemBackground"/>
-
-        <!-- Botão Menu (Direita) -->
-        <Button
-            android:id="@+id/btnMenu"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="⋮"
-            android:textSize="24sp"
-            android:textColor="#FFFFFF"
-            android:background="?android:attr/selectableItemBackground"/>
+            android:textSize="13sp"
+            android:text="🚨 Erro  ▼"/>
     </LinearLayout>
 
-    <!-- CORPO (Área 2 da sua imagem) -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:padding="16dp">
 
-        <TextView
-            android:id="@+id/tvDetailContent"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:textColor="#DDDDDD"
-            android:lineSpacingExtra="8dp"/>
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvDescricao"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#FFFFFF"
+                android:textSize="17sp"
+                android:lineSpacingExtra="4dp"
+                android:layout_marginBottom="20dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="🔧 Causas prováveis:"
+                android:textColor="#FFD700"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp"/>
+
+            <LinearLayout
+                android:id="@+id/containerCausas"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginBottom="20dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="🔗 Onde pesquisar mais:"
+                android:textColor="#FFD700"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp"/>
+
+            <LinearLayout
+                android:id="@+id/containerFontes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"/>
+
+        </LinearLayout>
     </ScrollView>
 
     <Button
-        android:id="@+id/btnShare"
+        android:id="@+id/btnCompartilhar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="COMPARTILHAR ERRO"
-        android:layout_marginTop="16dp"/>
+        android:text="📤 Compartilhar este erro"
+        android:padding="16dp"
+        android:layout_margin="12dp"/>
+
 </LinearLayout>
