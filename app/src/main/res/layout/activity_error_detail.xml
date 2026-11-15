@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="?attr/colorBackground">
+    android:background="?android:attr/colorBackground">
 
     <!-- TOPO -->
     <LinearLayout
@@ -19,8 +19,8 @@
             android:layout_height="48dp"
             android:text="←"
             android:textSize="24sp"
-            android:textColor="?attr/colorOnBackground"
-            android:background="?attr/selectableItemBackgroundBorderless" />
+            android:textColor="?android:attr/textColorPrimary"
+            android:background="?android:attr/selectableItemBackgroundBorderless" />
 
         <!-- Botão Dropdown (Selecione o Log) -->
         <Button
@@ -29,14 +29,14 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginStart="8dp"
-            android:backgroundTint="?attr/colorPrimary"
+            android:backgroundTint="#1976D2"
             android:textColor="#FFFFFF"
             android:textSize="14sp"
             android:padding="12dp"
             android:text="Selecione o Log ▼"/>
     </LinearLayout>
 
-    <!-- TEXTO ROLÁVEL (Ocupa todo o resto da tela) -->
+    <!-- TEXTO ROLÁVEL -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -51,7 +51,7 @@
                 android:id="@+id/tvDescricao"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="?attr/colorOnBackground"
+                android:textColor="?android:attr/textColorPrimary"
                 android:textSize="17sp"
                 android:lineSpacingExtra="6dp"
                 android:layout_marginBottom="24dp"/>
@@ -60,7 +60,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="🔧 Causas prováveis:"
-                android:textColor="?attr/colorPrimary"
+                android:textColor="#1976D2"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:layout_marginBottom="12dp"/>
@@ -76,7 +76,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="🔗 Onde pesquisar a solução:"
-                android:textColor="?attr/colorPrimary"
+                android:textColor="#1976D2"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:layout_marginBottom="12dp"/>
