@@ -11,7 +11,7 @@
       "Versão incompatível com o Android"
     ],
     "sources": [
-      "Pesquisar: NullPointerException Android causas",
+      "Pesquisar: NullPointerException Android causas em termos leigos",
       "StackOverflow: NullPointerException Android"
     ]
   },
@@ -27,7 +27,7 @@
       "Instalação corrompida"
     ],
     "sources": [
-      "Pesquisar: NoSuchMethodException Android atualização",
+      "Pesquisar: NoSuchMethodException Android atualização em termos leigos",
       "StackOverflow: NoSuchMethodException Android"
     ]
   },
@@ -43,7 +43,7 @@
       "Conflito com outro app aberto"
     ],
     "sources": [
-      "Pesquisar: como ler FATAL EXCEPTION Android",
+      "Pesquisar: como ler FATAL EXCEPTION Android em termos leigos",
       "StackOverflow: entender logcat FATAL EXCEPTION"
     ]
   },
@@ -59,7 +59,7 @@
       "Bug no app carregando arquivos gigantes"
     ],
     "sources": [
-      "Pesquisar: OutOfMemoryError Android como resolver",
+      "Pesquisar: OutOfMemoryError Android como resolver em termos leigos",
       "StackOverflow: OutOfMemoryError Android bitmap"
     ]
   },
@@ -75,7 +75,7 @@
       "Problema de conexão com a internet"
     ],
     "sources": [
-      "Pesquisar: ANR Application Not Responding Android",
+      "Pesquisar: ANR Application Not Responding Android em termos leigos",
       "StackOverflow: como resolver ANR Android"
     ]
   },
@@ -91,7 +91,7 @@
       "Bloqueio de DNS ou VPN"
     ],
     "sources": [
-      "Pesquisar: UnknownHostException Android",
+      "Pesquisar: UnknownHostException Android em termos leigos",
       "StackOverflow: UnknownHostException no internet"
     ]
   },
@@ -107,7 +107,7 @@
       "Firewall bloqueando a conexão"
     ],
     "sources": [
-      "Pesquisar: SocketTimeoutException Android",
+      "Pesquisar: SocketTimeoutException Android em termos leigos",
       "StackOverflow: SocketTimeoutException timeout"
     ]
   },
@@ -123,7 +123,7 @@
       "Versão do app incompatível com o sistema"
     ],
     "sources": [
-      "Pesquisar: ClassNotFoundException Android",
+      "Pesquisar: ClassNotFoundException Android em termos leigos",
       "StackOverflow: ClassNotFoundException fix"
     ]
   },
@@ -139,7 +139,7 @@
       "Dados corrompidos"
     ],
     "sources": [
-      "Pesquisar: IndexOutOfBoundsException Android",
+      "Pesquisar: IndexOutOfBoundsException Android em termos leigos",
       "StackOverflow: IndexOutOfBoundsException array"
     ]
   },
@@ -155,7 +155,7 @@
       "Restrição do sistema Android"
     ],
     "sources": [
-      "Pesquisar: Permission Denial Android",
+      "Pesquisar: Permission Denial Android em termos leigos",
       "StackOverflow: android permission denied"
     ]
   },
@@ -171,7 +171,7 @@
       "MicroG desinstalado ou desatualizado"
     ],
     "sources": [
-      "Pesquisar: Phenotype API not available MicroG",
+      "Pesquisar: Phenotype API not available MicroG em termos leigos",
       "StackOverflow: API_UNAVAILABLE GmsClient"
     ]
   },
@@ -187,7 +187,7 @@
       "App modificado sem suporte a Push"
     ],
     "sources": [
-      "Pesquisar: SERVICE_NOT_AVAILABLE Firebase Android",
+      "Pesquisar: SERVICE_NOT_AVAILABLE Firebase Android em termos leigos",
       "StackOverflow: Firebase SERVICE_NOT_AVAILABLE"
     ]
   },
@@ -202,7 +202,7 @@
       "Conflito entre bibliotecas do Google e MicroG"
     ],
     "sources": [
-      "Pesquisar: Unsupported class loader Android",
+      "Pesquisar: Unsupported class loader Android em termos leigos",
       "StackOverflow: Unsupported class loader Android mod"
     ]
   },
@@ -217,7 +217,7 @@
       "Biblioteca desatualizada"
     ],
     "sources": [
-      "Pesquisar: Cannot block on non-blocking thread Android",
+      "Pesquisar: Cannot block on non-blocking thread Android em termos leigos",
       "StackOverflow: IllegalStateException Cannot block"
     ]
   }
