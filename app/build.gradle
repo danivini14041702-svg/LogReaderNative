@@ -22,11 +22,11 @@ android {
 }
 
 dependencies {
-    // Bibliotecas de Interface e Tema
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.11.0'
     implementation 'androidx.drawerlayout:drawerlayout:1.2.0'
-    
-    // NOVA BIBLIOTECA: Chrome Custom Tabs
     implementation 'androidx.browser:browser:1.8.0'
+    
+    // Biblioteca do Google AdMob
+    implementation 'com.google.android.gms:play-services-ads:22.6.0'
 }
