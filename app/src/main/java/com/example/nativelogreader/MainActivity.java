@@ -1,7 +1,6 @@
 package com.example.nativelogreader;
 
 import android.app.AlertDialog;
-import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -17,6 +16,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import java.io.BufferedReader;
@@ -58,18 +59,17 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btnPerguntarGemini).setOnClickListener(v -> {
             String pergunta = edtGemini.getText().toString().trim();
             if (!pergunta.isEmpty()) {
-                abrirGemini(pergunta);
+                abrirPesquisaIA(pergunta);
             } else {
                 Toast.makeText(this, "Digite uma pergunta primeiro!", Toast.LENGTH_SHORT).show();
             }
         });
 
-        // Lógica dos Links Úteis
-        findViewById(R.id.linkStackOverflow).setOnClickListener(v -> abrirLink("https://stackoverflow.com/"));
-        findViewById(R.id.linkXDA).setOnClickListener(v -> abrirLink("https://xdaforums.com/"));
-        findViewById(R.id.linkForumAndroid).setOnClickListener(v -> abrirLink("https://android.stackexchange.com/"));
+        // Links Úteis agora também abrem no Custom Tab
+        findViewById(R.id.linkStackOverflow).setOnClickListener(v -> abrirEmCustomTab("https://stackoverflow.com/"));
+        findViewById(R.id.linkXDA).setOnClickListener(v -> abrirEmCustomTab("https://xdaforums.com/"));
+        findViewById(R.id.linkForumAndroid).setOnClickListener(v -> abrirEmCustomTab("https://android.stackexchange.com/"));
 
-        // Lógica do Botão Como Usar
         findViewById(R.id.btnComoUsar).setOnClickListener(v -> mostrarTutorial());
 
         findViewById(R.id.btnCompartilharApp).setOnClickListener(v -> {
@@ -101,24 +101,24 @@ public class MainActivity extends AppCompatActivity {
         dialogView.findViewById(R.id.btnEntendi).setOnClickListener(v -> dialog.dismiss());
     }
 
-    private void abrirGemini(String pergunta) {
+    // NOVA FUNÇÃO: Abre a Pesquisa do Gemini no Custom Tab
+    private void abrirPesquisaIA(String pergunta) {
         String url = "https://www.google.com/search?q=" + Uri.encode(pergunta) + "&udm=50";
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-        intent.addCategory(Intent.CATEGORY_BROWSABLE);
-        intent.setPackage("com.android.chrome"); 
-        try {
-            startActivity(intent);
-        } catch (ActivityNotFoundException e) {
-            intent.setPackage(null); 
-            startActivity(Intent.createChooser(intent, "Escolha o navegador"));
-        }
+        abrirEmCustomTab(url);
     }
 
-    private void abrirLink(String url) {
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-        startActivity(intent);
+    // FUNÇÃO GERAL PARA ABRIR LINKS NO CUSTOM TAB
+    private void abrirEmCustomTab(String url) {
+        CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+        
+        // Coloca a barrinha do navegador na cor do nosso app (Azul)
+        builder.setToolbarColor(ContextCompat.getColor(this, android.R.color.holo_blue_dark));
+        
+        CustomTabsIntent customTabsIntent = builder.build();
+        customTabsIntent.launchUrl(this, Uri.parse(url));
     }
 
+    // ... (Métodos onActivityResult, processLogFile, analyzeLog e criarCartaoDeErro continuam iguais)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
