@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Permissão para baixar o JSON da nuvem e os Anúncios -->
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -9,7 +8,7 @@
         android:label="Log Reader Ads"
         android:theme="@style/Theme.AppCompat.DayNight.NoActionBar">
 
-        <!-- ID de Teste Oficial do AdMob (NÃO MUDE AINDA) -->
+        <!-- ID de Teste Oficial do AdMob -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-3940256099942544~3347511713"/>
@@ -28,5 +27,4 @@
             android:exported="false" />
 
     </application>
-
 </manifest>
