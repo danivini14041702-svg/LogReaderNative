@@ -159,4 +159,67 @@
       "StackOverflow: android permission denied"
     ]
   }
+  },
+  {
+    "pattern": "Phenotype.API is not available",
+    "title": "O app tentou usar um serviço do Google que não existe",
+    "severity": "ALTO",
+    "description": "O aplicativo tentou se conectar aos Serviços do Google, mas eles não foram encontrados. Isso é muito comum em aplicativos modificados (como versões alternativas do YouTube ou WhatsApp) que usam o MicroG em vez do Google Play Services oficial.",
+    "tip": "Verifique se o MicroG (ou o GMS modificado) está instalado e funcionando no seu celular.",
+    "causes": [
+      "Falta do Google Play Services original",
+      "Uso de versões modificadas (Mods/ReVanced)",
+      "MicroG desinstalado ou desatualizado"
+    ],
+    "sources": [
+      "Pesquisar: Phenotype API not available MicroG",
+      "StackOverflow: API_UNAVAILABLE GmsClient"
+    ]
+  },
+  {
+    "pattern": "SERVICE_NOT_AVAILABLE",
+    "title": "Falha ao conectar com o serviço de notificações",
+    "severity": "ALTO",
+    "description": "O app não conseguiu se conectar ao serviço do Firebase para receber notificações (Push). Em apps modificados, isso costuma falhar porque as notificações dependem dos servidores oficiais do Google.",
+    "tip": "Não se preocupe, o app principal ainda vai funcionar. Você só pode não receber notificações.",
+    "causes": [
+      "Falta do Google Play Services",
+      "Bloqueio de rede",
+      "App modificado sem suporte a Push"
+    ],
+    "sources": [
+      "Pesquisar: SERVICE_NOT_AVAILABLE Firebase Android",
+      "StackOverflow: Firebase SERVICE_NOT_AVAILABLE"
+    ]
+  },
+  {
+    "pattern": "Unsupported class loader",
+    "title": "Conflito de bibliotecas no aplicativo",
+    "severity": "ALTO",
+    "description": "O app tentou carregar uma parte do código usando o método errado. Isso é super comum em apps modificados (como versões Premium ou ReVanced) porque o código original foi alterado.",
+    "tip": "Se o app funcionar, pode ignorar. Se travar, tente instalar a versão original da loja.",
+    "causes": [
+      "Modificação do APK",
+      "Conflito entre bibliotecas do Google e MicroG"
+    ],
+    "sources": [
+      "Pesquisar: Unsupported class loader Android",
+      "StackOverflow: Unsupported class loader Android mod"
+    ]
+  },
+  {
+    "pattern": "Cannot block on non-blocking thread",
+    "title": "O app tentou fazer uma tarefa pesada na hora errada",
+    "severity": "ALTO",
+    "description": "O desenvolvedor do app tentou esperar uma tarefa terminar em um lugar onde isso não é permitido, o que pode causar travamentos ou lentidão. É um erro de programação do próprio app.",
+    "tip": "Geralmente não afeta o uso básico, mas pode deixar o app lento em certas telas.",
+    "causes": [
+      "Erro de lógica no código",
+      "Biblioteca desatualizada"
+    ],
+    "sources": [
+      "Pesquisar: Cannot block on non-blocking thread Android",
+      "StackOverflow: IllegalStateException Cannot block"
+    ]
+  }
 ]
