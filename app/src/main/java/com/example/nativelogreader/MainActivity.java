@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Links Úteis agora também abrem no Custom Tab
+        // Lógica dos Links Úteis
         findViewById(R.id.linkStackOverflow).setOnClickListener(v -> abrirEmCustomTab("https://stackoverflow.com/"));
         findViewById(R.id.linkXDA).setOnClickListener(v -> abrirEmCustomTab("https://xdaforums.com/"));
         findViewById(R.id.linkForumAndroid).setOnClickListener(v -> abrirEmCustomTab("https://android.stackexchange.com/"));
@@ -101,24 +101,18 @@ public class MainActivity extends AppCompatActivity {
         dialogView.findViewById(R.id.btnEntendi).setOnClickListener(v -> dialog.dismiss());
     }
 
-    // NOVA FUNÇÃO: Abre a Pesquisa do Gemini no Custom Tab
     private void abrirPesquisaIA(String pergunta) {
         String url = "https://www.google.com/search?q=" + Uri.encode(pergunta) + "&udm=50";
         abrirEmCustomTab(url);
     }
 
-    // FUNÇÃO GERAL PARA ABRIR LINKS NO CUSTOM TAB
     private void abrirEmCustomTab(String url) {
         CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
-        
-        // Coloca a barrinha do navegador na cor do nosso app (Azul)
         builder.setToolbarColor(ContextCompat.getColor(this, android.R.color.holo_blue_dark));
-        
         CustomTabsIntent customTabsIntent = builder.build();
         customTabsIntent.launchUrl(this, Uri.parse(url));
     }
 
-    // ... (Métodos onActivityResult, processLogFile, analyzeLog e criarCartaoDeErro continuam iguais)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -180,7 +174,9 @@ public class MainActivity extends AppCompatActivity {
         card.setTextSize(16f);
         card.setGravity(Gravity.CENTER_VERTICAL | Gravity.START);
         card.setPadding(30, 30, 30, 30);
-        card.setText("🚨 " + err.title);
+        
+        // A MÁGICA ACONTECE AQUI: Trocamos o 'title' (explicação) pelo 'pattern' (termo técnico)
+        card.setText("🚨 " + err.pattern);
 
         card.setOnClickListener(v -> {
             Intent intent = new Intent(this, ErrorDetailActivity.class);
