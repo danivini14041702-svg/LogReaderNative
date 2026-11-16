@@ -61,7 +61,7 @@ public class ErrorDetailActivity extends AppCompatActivity {
         btnDropdown.setOnClickListener(v -> {
             PopupMenu popup = new PopupMenu(this, v);
             for (int i = 0; i < lista.size(); i++) {
-                popup.getMenu().add(0, i, i, lista.get(i).title);
+                popup.getMenu().add(0, i, i, lista.get(i).pattern); // AQUI TAMBÉM MUDAMOS PARA PATTERN
             }
             popup.setOnMenuItemClickListener(item -> {
                 currentIndex = item.getItemId();
@@ -82,7 +82,8 @@ public class ErrorDetailActivity extends AppCompatActivity {
         if (lista.isEmpty()) return;
         ErrorPattern err = lista.get(currentIndex);
 
-        ((Button) findViewById(R.id.btnDropdownErro)).setText("🚨 " + err.title + "  ▼");
+        // AQUI ESTÁ A CORREÇÃO: Trocamos 'err.title' por 'err.pattern'
+        ((Button) findViewById(R.id.btnDropdownErro)).setText("🚨 " + err.pattern + "  ▼");
 
         TextView tvDesc = findViewById(R.id.tvDescricao);
         tvDesc.setText(err.description + "\n\n💡 " + err.tip);
