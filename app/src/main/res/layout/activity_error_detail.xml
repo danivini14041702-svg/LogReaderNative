@@ -12,7 +12,6 @@
         android:orientation="vertical"
         android:background="?android:attr/colorBackground">
 
-        <!-- Barra Superior com Voltar, Menu e Dropdown -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -53,7 +52,8 @@
 
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:padding="16dp">
 
             <LinearLayout
@@ -61,7 +61,6 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <!-- Texto da Descrição com Seleção Ativada -->
                 <TextView
                     android:id="@+id/tvDescricao"
                     android:layout_width="match_parent"
@@ -102,66 +101,79 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:layout_marginBottom="30dp"/>
+                    android:layout_marginBottom="16dp"/>
             </LinearLayout>
         </ScrollView>
+
+        <!-- BANNER DE ANÚNCIO (Na parte de baixo) -->
+        <com.google.android.gms.ads.AdView
+            xmlns:ads="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/adViewDetail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            ads:adSize="BANNER"
+            ads:adUnitId="ca-app-pub-3940256099942544/6300978111"/>
     </LinearLayout>
 
-    <!-- MENU LATERAL -->
-    <LinearLayout
+    <!-- MENU LATERAL (Cópia idêntica à Tela 1) -->
+    <ScrollView
         android:layout_width="300dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="?android:attr/colorBackground"
-        android:orientation="vertical"
-        android:padding="24dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Menu"
-            android:textColor="?android:attr/textColorPrimary"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="24dp"/>
-
-        <Switch
-            android:id="@+id/switchTemaDetalhe"
+        android:background="?android:attr/colorBackground">
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Tema Escuro"
-            android:textColor="?android:attr/textColorPrimary"
-            android:textSize="16sp"
-            android:layout_marginBottom="32dp"/>
+            android:orientation="vertical"
+            android:padding="24dp">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Não entendeu um termo?"
-            android:textColor="?android:attr/textColorPrimary"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="8dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Menu"
+                android:textColor="?android:attr/textColorPrimary"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="24dp"/>
 
-        <EditText
-            android:id="@+id/edtGeminiDetalhe"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Pergunte ao Gemini..."
-            android:textColorHint="#888888"
-            android:textColor="?android:attr/textColorPrimary"
-            android:backgroundTint="#1976D2"
-            android:inputType="text"
-            android:layout_marginBottom="12dp"/>
+            <Switch
+                android:id="@+id/switchTemaDetalhe"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Tema Escuro"
+                android:textColor="?android:attr/textColorPrimary"
+                android:textSize="16sp"
+                android:layout_marginBottom="32dp"/>
 
-        <Button
-            android:id="@+id/btnPerguntarGeminiDetalhe"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Pesquisar no Gemini"
-            android:textColor="#FFFFFF"
-            android:backgroundTint="#1976D2"
-            android:layout_marginBottom="24dp"/>
-    </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Não entendeu um termo?"
+                android:textColor="?android:attr/textColorPrimary"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp"/>
 
+            <EditText
+                android:id="@+id/edtGeminiDetalhe"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Pergunte ao Gemini..."
+                android:textColorHint="#888888"
+                android:textColor="?android:attr/textColorPrimary"
+                android:backgroundTint="#1976D2"
+                android:inputType="text"
+                android:layout_marginBottom="12dp"/>
+
+            <Button
+                android:id="@+id/btnPerguntarGeminiDetalhe"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Pesquisar no Gemini"
+                android:textColor="#FFFFFF"
+                android:backgroundTint="#1976D2"
+                android:layout_marginBottom="24dp"/>
+        </LinearLayout>
+    </ScrollView>
 </androidx.drawerlayout.widget.DrawerLayout>
