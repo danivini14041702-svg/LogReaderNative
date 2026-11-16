@@ -106,9 +106,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void abrirPesquisaIA(String pergunta) {
-        String url = "https://www.google.com/search?q=" + Uri.encode(pergunta) + "&udm=50";
-        abrirEmCustomTab(url);
-    }
+    // Adiciona a instrução para a IA responder de forma simples
+    String perguntaLeiga = pergunta + " em termos leigos e simples";
+    String url = "https://www.google.com/search?q=" + Uri.encode(perguntaLeiga) + "&udm=50";
+    abrirEmCustomTab(url);
+}
 
     private void abrirEmCustomTab(String url) {
         CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
