@@ -1,0 +1,162 @@
+[
+  {
+    "pattern": "NullPointerException",
+    "title": "O app tentou usar algo que não existia",
+    "severity": "CRITICO",
+    "description": "Imagine que o app pediu um copo, mas a mão dele estava vazia. Em termos técnicos, ele tentou acessar uma informação que nunca foi criada ou já foi apagada da memória.",
+    "tip": "Geralmente é bug do desenvolvedor do app, não do seu celular.",
+    "causes": [
+      "Bug no aplicativo (variável não inicializada)",
+      "Dados corrompidos no cache do app",
+      "Versão incompatível com o Android"
+    ],
+    "sources": [
+      "Pesquisar: NullPointerException Android causas",
+      "StackOverflow: NullPointerException Android"
+    ]
+  },
+  {
+    "pattern": "NoSuchMethodException",
+    "title": "O app chamou uma função que não existe mais",
+    "severity": "ALTO",
+    "description": "É como procurar uma ferramenta na caixa e ela ter sumido. O app foi feito esperando uma função antiga, mas o sistema Android atualizou e removeu essa função.",
+    "tip": "Costuma acontecer depois de atualizar o Android ou o app.",
+    "causes": [
+      "App desatualizado para a versão do Android",
+      "Biblioteca interna do app ficou incompatível",
+      "Instalação corrompida"
+    ],
+    "sources": [
+      "Pesquisar: NoSuchMethodException Android atualização",
+      "StackOverflow: NoSuchMethodException Android"
+    ]
+  },
+  {
+    "pattern": "FATAL EXCEPTION",
+    "title": "O app travou completamente (crash fatal)",
+    "severity": "CRITICO",
+    "description": "Essa é a linha vermelha que aparece quando o app fecha do nada. Significa que o erro foi tão grave que o Android preferiu fechar o app para não travar o celular inteiro.",
+    "tip": "Procure a linha logo abaixo — é lá que está o erro real.",
+    "causes": [
+      "Qualquer erro grave (NullPointer, memória, etc)",
+      "Memória RAM insuficiente no momento",
+      "Conflito com outro app aberto"
+    ],
+    "sources": [
+      "Pesquisar: como ler FATAL EXCEPTION Android",
+      "StackOverflow: entender logcat FATAL EXCEPTION"
+    ]
+  },
+  {
+    "pattern": "OutOfMemoryError",
+    "title": "O app ficou sem memória",
+    "severity": "CRITICO",
+    "description": "O celular tem uma memória limitada. O app tentou carregar tanta coisa (fotos, dados) que estourou o limite e o sistema teve que fechá-lo.",
+    "tip": "Tente fechar outros apps e abrir este de novo.",
+    "causes": [
+      "Muitos apps abertos ao mesmo tempo",
+      "Celular com pouca memória RAM",
+      "Bug no app carregando arquivos gigantes"
+    ],
+    "sources": [
+      "Pesquisar: OutOfMemoryError Android como resolver",
+      "StackOverflow: OutOfMemoryError Android bitmap"
+    ]
+  },
+  {
+    "pattern": "ANR in",
+    "title": "O app parou de responder (Travou)",
+    "severity": "CRITICO",
+    "description": "ANR significa Application Not Responding. O app ficou tão ocupado fazendo algo que parou de responder aos toques na tela. O Android perguntou se você quer fechar.",
+    "tip": "Toque em 'Esperar' se tiver paciência, ou 'Fechar' para reiniciar.",
+    "causes": [
+      "Processamento pesado na thread principal",
+      "Celular muito lento ou sobrecarregado",
+      "Problema de conexão com a internet"
+    ],
+    "sources": [
+      "Pesquisar: ANR Application Not Responding Android",
+      "StackOverflow: como resolver ANR Android"
+    ]
+  },
+  {
+    "pattern": "UnknownHostException",
+    "title": "O app não conseguiu conectar à internet",
+    "severity": "ALTO",
+    "description": "O app tentou acessar um site ou servidor, mas o celular não conseguiu encontrar o endereço. Pode ser que a internet esteja desligada ou o site esteja fora do ar.",
+    "tip": "Verifique seu Wi-Fi ou dados móveis.",
+    "causes": [
+      "Sem conexão de internet",
+      "Servidor do app está fora do ar",
+      "Bloqueio de DNS ou VPN"
+    ],
+    "sources": [
+      "Pesquisar: UnknownHostException Android",
+      "StackOverflow: UnknownHostException no internet"
+    ]
+  },
+  {
+    "pattern": "SocketTimeoutException",
+    "title": "A internet caiu no meio da ação",
+    "severity": "ALTO",
+    "description": "O app começou a conversar com o servidor, mas a resposta demorou tanto que o app desistiu. É como esperar uma entrega que nunca chega.",
+    "tip": "Tente novamente em um local com internet mais estável.",
+    "causes": [
+      "Internet muito lenta",
+      "Servidor sobrecarregado",
+      "Firewall bloqueando a conexão"
+    ],
+    "sources": [
+      "Pesquisar: SocketTimeoutException Android",
+      "StackOverflow: SocketTimeoutException timeout"
+    ]
+  },
+  {
+    "pattern": "ClassNotFoundException",
+    "title": "O app tentou usar um código que não foi instalado",
+    "severity": "ALTO",
+    "description": "O app procurou uma parte do código dele que deveria estar lá, mas não encontrou. Isso geralmente ocorre quando a instalação do app não foi completa.",
+    "tip": "Tente desinstalar e instalar o app novamente.",
+    "causes": [
+      "Instalação incompleta",
+      "Conflito de bibliotecas",
+      "Versão do app incompatível com o sistema"
+    ],
+    "sources": [
+      "Pesquisar: ClassNotFoundException Android",
+      "StackOverflow: ClassNotFoundException fix"
+    ]
+  },
+  {
+    "pattern": "IndexOutOfBoundsException",
+    "title": "O app tentou ler uma página que não existe",
+    "severity": "ALTO",
+    "description": "É como abrir um livro na página 500, mas o livro só tem 100 páginas. O app pediu uma informação em uma posição que não existe na lista.",
+    "tip": "Geralmente é um bug na programação.",
+    "causes": [
+      "Erro de lógica no código",
+      "Lista vazia sendo acessada",
+      "Dados corrompidos"
+    ],
+    "sources": [
+      "Pesquisar: IndexOutOfBoundsException Android",
+      "StackOverflow: IndexOutOfBoundsException array"
+    ]
+  },
+  {
+    "pattern": "Permission Denial",
+    "title": "O app tentou acessar algo sem permissão",
+    "severity": "ALTO",
+    "description": "O app tentou usar a câmera, os arquivos ou o microfone, mas o usuário (ou o sistema) não deu permissão para isso.",
+    "tip": "Vá nas configurações do celular e permita o acesso para este app.",
+    "causes": [
+      "Permissão negada pelo usuário",
+      "App pedindo permissão que não declarou",
+      "Restrição do sistema Android"
+    ],
+    "sources": [
+      "Pesquisar: Permission Denial Android",
+      "StackOverflow: android permission denied"
+    ]
+  }
+]
