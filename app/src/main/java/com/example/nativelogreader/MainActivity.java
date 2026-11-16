@@ -14,12 +14,21 @@ import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import com.google.android.gms.ads.AdError;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -31,6 +40,10 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout containerErros;
     private DrawerLayout drawerLayout;
     private SharedPreferences prefs;
+    
+    private AdView bannerAdView;
+    private InterstitialAd mInterstitialAd;
+    private int ultimoIndexClicado = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,9 +54,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // --- A LINHA MÁGICA ESTÁ AQUI ---
-        ErrorDatabase.sincronizarNuvem(this);
-        // --------------------------------
+        MobileAds.initialize(this, initializationStatus -> {});
+        carregarBanner();
+        carregarInterstitial();
+
+        ErrorDatabase.sincronizarNuvem(this); 
 
         drawerLayout = findViewById(R.id.drawerLayout);
         tvSummary = findViewById(R.id.tvSummary);
@@ -69,7 +84,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Lógica dos Links Úteis
         findViewById(R.id.linkStackOverflow).setOnClickListener(v -> abrirEmCustomTab("https://stackoverflow.com/"));
         findViewById(R.id.linkXDA).setOnClickListener(v -> abrirEmCustomTab("https://xdaforums.com/"));
         findViewById(R.id.linkForumAndroid).setOnClickListener(v -> abrirEmCustomTab("https://android.stackexchange.com/"));
@@ -79,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btnCompartilharApp).setOnClickListener(v -> {
             Intent intent = new Intent(Intent.ACTION_SEND);
             intent.setType("text/plain");
-            intent.putExtra(Intent.EXTRA_TEXT, "Conheça o Log Reader! O app que traduz erros de Android para o português. (Manual do Mundo para Idiotas)");
+            intent.putExtra(Intent.EXTRA_TEXT, "Conheça o Log Reader Ads! O app que traduz erros de Android.");
             startActivity(Intent.createChooser(intent, "Compartilhar App"));
         });
 
@@ -88,6 +102,29 @@ public class MainActivity extends AppCompatActivity {
             intent.setType("*/*");
             startActivityForResult(intent, PICK_LOG_FILE);
         });
+    }
+
+    private void carregarBanner() {
+        bannerAdView = findViewById(R.id.adViewMain);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        bannerAdView.loadAd(adRequest);
+    }
+
+    private void carregarInterstitial() {
+        String adUnitId = "ca-app-pub-3940256099942544/1033173712";
+        AdRequest adRequest = new AdRequest.Builder().build();
+
+        InterstitialAd.load(this, adUnitId, adRequest,
+            new InterstitialAdLoadCallback() {
+                @Override
+                public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                    mInterstitialAd = interstitialAd;
+                }
+                @Override
+                public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                    mInterstitialAd = null;
+                }
+            });
     }
 
     private void mostrarTutorial() {
@@ -106,11 +143,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void abrirPesquisaIA(String pergunta) {
-    // Adiciona a instrução para a IA responder de forma simples
-    String perguntaLeiga = pergunta + " em termos leigos e simples";
-    String url = "https://www.google.com/search?q=" + Uri.encode(perguntaLeiga) + "&udm=50";
-    abrirEmCustomTab(url);
-}
+        String perguntaLeiga = pergunta + " em termos leigos e simples";
+        String url = "https://www.google.com/search?q=" + Uri.encode(perguntaLeiga) + "&udm=50";
+        abrirEmCustomTab(url);
+    }
 
     private void abrirEmCustomTab(String url) {
         CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
@@ -184,11 +220,32 @@ public class MainActivity extends AppCompatActivity {
         card.setText("🚨 " + err.pattern);
 
         card.setOnClickListener(v -> {
-            Intent intent = new Intent(this, ErrorDetailActivity.class);
-            intent.putExtra("index", index);
-            startActivity(intent);
+            ultimoIndexClicado = index;
+            
+            if (mInterstitialAd != null) {
+                mInterstitialAd.show(MainActivity.this);
+                mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+                    @Override
+                    public void onAdDismissedFullScreenContent() {
+                        irParaDetalhes(ultimoIndexClicado);
+                        carregarInterstitial(); 
+                    }
+                    @Override
+                    public void onAdFailedToShowFullScreenContent(@NonNull AdError adError) {
+                        irParaDetalhes(ultimoIndexClicado);
+                    }
+                });
+            } else {
+                irParaDetalhes(ultimoIndexClicado);
+            }
         });
 
         containerErros.addView(card);
+    }
+    
+    private void irParaDetalhes(int index) {
+        Intent intent = new Intent(this, ErrorDetailActivity.class);
+        intent.putExtra("index", index);
+        startActivity(intent);
     }
 }
