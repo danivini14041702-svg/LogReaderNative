@@ -41,6 +41,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // --- A LINHA MÁGICA ESTÁ AQUI ---
+        ErrorDatabase.sincronizarNuvem(this);
+        // --------------------------------
+
         drawerLayout = findViewById(R.id.drawerLayout);
         tvSummary = findViewById(R.id.tvSummary);
         containerErros = findViewById(R.id.containerErros);
@@ -175,7 +179,6 @@ public class MainActivity extends AppCompatActivity {
         card.setGravity(Gravity.CENTER_VERTICAL | Gravity.START);
         card.setPadding(30, 30, 30, 30);
         
-        // A MÁGICA ACONTECE AQUI: Trocamos o 'title' (explicação) pelo 'pattern' (termo técnico)
         card.setText("🚨 " + err.pattern);
 
         card.setOnClickListener(v -> {
