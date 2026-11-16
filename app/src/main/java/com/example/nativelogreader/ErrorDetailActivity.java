@@ -18,6 +18,9 @@ import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import java.util.List;
 
 public class ErrorDetailActivity extends AppCompatActivity {
@@ -29,6 +32,11 @@ public class ErrorDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_error_detail);
+
+        MobileAds.initialize(this, initializationStatus -> {});
+        AdView bannerAdView = findViewById(R.id.adViewDetail);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        bannerAdView.loadAd(adRequest);
 
         drawerLayout = findViewById(R.id.drawerLayoutDetalhe);
         lista = ErrorDatabase.errosEncontrados;
@@ -61,7 +69,7 @@ public class ErrorDetailActivity extends AppCompatActivity {
         btnDropdown.setOnClickListener(v -> {
             PopupMenu popup = new PopupMenu(this, v);
             for (int i = 0; i < lista.size(); i++) {
-                popup.getMenu().add(0, i, i, lista.get(i).pattern); // AQUI TAMBÉM MUDAMOS PARA PATTERN
+                popup.getMenu().add(0, i, i, lista.get(i).pattern);
             }
             popup.setOnMenuItemClickListener(item -> {
                 currentIndex = item.getItemId();
@@ -82,7 +90,6 @@ public class ErrorDetailActivity extends AppCompatActivity {
         if (lista.isEmpty()) return;
         ErrorPattern err = lista.get(currentIndex);
 
-        // AQUI ESTÁ A CORREÇÃO: Trocamos 'err.title' por 'err.pattern'
         ((Button) findViewById(R.id.btnDropdownErro)).setText("🚨 " + err.pattern + "  ▼");
 
         TextView tvDesc = findViewById(R.id.tvDescricao);
@@ -156,11 +163,10 @@ public class ErrorDetailActivity extends AppCompatActivity {
     }
 
     private void abrirPesquisaIA(String pergunta) {
-    // Adiciona a instrução para a IA responder de forma simples
-    String perguntaLeiga = pergunta + " em termos leigos e simples";
-    String url = "https://www.google.com/search?q=" + Uri.encode(perguntaLeiga) + "&udm=50";
-    abrirEmCustomTab(url);
-}
+        String perguntaLeiga = pergunta + " em termos leigos e simples";
+        String url = "https://www.google.com/search?q=" + Uri.encode(perguntaLeiga) + "&udm=50";
+        abrirEmCustomTab(url);
+    }
 
     private void abrirEmCustomTab(String url) {
         CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
