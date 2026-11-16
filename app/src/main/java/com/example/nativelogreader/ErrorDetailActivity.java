@@ -1,6 +1,5 @@
 package com.example.nativelogreader;
 
-import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -15,6 +14,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import java.util.List;
@@ -50,7 +51,7 @@ public class ErrorDetailActivity extends AppCompatActivity {
         findViewById(R.id.btnPerguntarGeminiDetalhe).setOnClickListener(v -> {
             String pergunta = edtGemini.getText().toString().trim();
             if (!pergunta.isEmpty()) {
-                abrirGemini(pergunta);
+                abrirPesquisaIA(pergunta);
             } else {
                 Toast.makeText(this, "Digite uma pergunta!", Toast.LENGTH_SHORT).show();
             }
@@ -101,33 +102,29 @@ public class ErrorDetailActivity extends AppCompatActivity {
             containerCausas.addView(t);
         }
 
-        // --- NOVA LÓGICA DA SEÇÃO DE PESQUISA ---
         LinearLayout containerFontes = findViewById(R.id.containerFontes);
         containerFontes.removeAllViews();
 
-        // 1. Título do Google
         TextView tvGoogleTitle = new TextView(this);
         tvGoogleTitle.setText("No Google pesquise por:");
-        tvGoogleTitle.setTextColor(0xFF888888); // Cinza
+        tvGoogleTitle.setTextColor(0xFF888888);
         tvGoogleTitle.setTextSize(14f);
         tvGoogleTitle.setPadding(0, 0, 0, 8);
         containerFontes.addView(tvGoogleTitle);
 
-        // 2. Termos de busca do Google
         for (String fonte : err.sources) {
             if (fonte.startsWith("Pesquisar:")) {
                 String termo = fonte.replace("Pesquisar:", "").trim();
                 TextView t = new TextView(this);
                 t.setText("🔎 " + termo);
-                t.setTextColor(0xFF1976D2); // Azul
+                t.setTextColor(0xFF1976D2);
                 t.setTextSize(15f);
                 t.setPadding(0, 8, 0, 16);
-                t.setOnClickListener(v -> abrirLink("https://www.google.com/search?q=" + Uri.encode(termo)));
+                t.setOnClickListener(v -> abrirEmCustomTab("https://www.google.com/search?q=" + Uri.encode(termo)));
                 containerFontes.addView(t);
             }
         }
 
-        // 3. Título dos Sites
         TextView tvSitesTitle = new TextView(this);
         tvSitesTitle.setText("Sites recomendados:");
         tvSitesTitle.setTextColor(0xFF888888);
@@ -135,7 +132,6 @@ public class ErrorDetailActivity extends AppCompatActivity {
         tvSitesTitle.setPadding(0, 8, 0, 8);
         containerFontes.addView(tvSitesTitle);
 
-        // 4. Links dos Sites (formatados a partir das strings do ErrorDatabase)
         for (String fonte : err.sources) {
             if (fonte.startsWith("StackOverflow:")) {
                 String termo = fonte.replace("StackOverflow:", "").trim();
@@ -144,7 +140,7 @@ public class ErrorDetailActivity extends AppCompatActivity {
                 t.setTextColor(0xFF1976D2);
                 t.setTextSize(15f);
                 t.setPadding(0, 8, 0, 8);
-                t.setOnClickListener(v -> abrirLink("https://stackoverflow.com/search?q=" + Uri.encode(termo)));
+                t.setOnClickListener(v -> abrirEmCustomTab("https://stackoverflow.com/search?q=" + Uri.encode(termo)));
                 containerFontes.addView(t);
             } else if (fonte.startsWith("XDA")) {
                 TextView t = new TextView(this);
@@ -152,28 +148,21 @@ public class ErrorDetailActivity extends AppCompatActivity {
                 t.setTextColor(0xFF1976D2);
                 t.setTextSize(15f);
                 t.setPadding(0, 8, 0, 8);
-                t.setOnClickListener(v -> abrirLink("https://www.google.com/search?q=site:xda-developers.com+" + Uri.encode(err.pattern)));
+                t.setOnClickListener(v -> abrirEmCustomTab("https://www.google.com/search?q=site:xda-developers.com+" + Uri.encode(err.pattern)));
                 containerFontes.addView(t);
             }
         }
     }
 
-    private void abrirGemini(String pergunta) {
-        // Forçando o www e a categoria BROWSABLE para tentar enganar o app do Google
+    private void abrirPesquisaIA(String pergunta) {
         String url = "https://www.google.com/search?q=" + Uri.encode(pergunta) + "&udm=50";
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-        intent.addCategory(Intent.CATEGORY_BROWSABLE);
-        intent.setPackage("com.android.chrome");
-        try {
-            startActivity(intent);
-        } catch (ActivityNotFoundException e) {
-            intent.setPackage(null);
-            startActivity(Intent.createChooser(intent, "Escolha o navegador"));
-        }
+        abrirEmCustomTab(url);
     }
 
-    private void abrirLink(String url) {
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-        startActivity(intent);
+    private void abrirEmCustomTab(String url) {
+        CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+        builder.setToolbarColor(ContextCompat.getColor(this, android.R.color.holo_blue_dark));
+        CustomTabsIntent customTabsIntent = builder.build();
+        customTabsIntent.launchUrl(this, Uri.parse(url));
     }
 }
