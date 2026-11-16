@@ -93,7 +93,6 @@ public class MainActivity extends AppCompatActivity {
         builder.setView(dialogView);
         
         AlertDialog dialog = builder.create();
-        // Deixa o fundo do dialog transparente para pegar o tema do XML
         if (dialog.getWindow() != null) {
             dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         }
@@ -103,14 +102,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void abrirGemini(String pergunta) {
-        String url = "https://google.com/search?udm=50&q=" + Uri.encode(pergunta);
+        String url = "https://www.google.com/search?q=" + Uri.encode(pergunta) + "&udm=50";
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        intent.addCategory(Intent.CATEGORY_BROWSABLE);
         intent.setPackage("com.android.chrome"); 
         try {
             startActivity(intent);
         } catch (ActivityNotFoundException e) {
             intent.setPackage(null); 
-            startActivity(intent);
+            startActivity(Intent.createChooser(intent, "Escolha o navegador"));
         }
     }
 
@@ -119,7 +119,6 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    // --- MÉTODOS EXISTENTES DE LOG (onActivityResult, processLogFile, analyzeLog, criarCartaoDeErro) ---
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
