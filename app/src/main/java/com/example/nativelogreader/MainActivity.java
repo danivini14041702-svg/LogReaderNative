@@ -3,6 +3,8 @@ package com.example.nativelogreader;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -53,14 +55,13 @@ public class MainActivity extends AppCompatActivity {
     private AdView bannerAdView;
     private InterstitialAd mInterstitialAd;
     private int ultimoIndexClicado = -1;
-
-    // App Open
     private AppOpenAd appOpenAd = null;
     private boolean isLoadingAd = false;
     private boolean isShowingAd = false;
-
-    // Native Ad
     private NativeAd nativeAd;
+
+    // Controle de Ação Pendente (para fazer o app continuar o que ia fazer depois do anúncio)
+    private Runnable acaoPendente = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         carregarBannerMenu();
         carregarInterstitial();
         carregarAppOpenAd();
-        carregarNativeAd(); // Carrega o disfarçado
+        carregarNativeAd();
 
         ErrorDatabase.sincronizarNuvem(this);
 
@@ -94,33 +95,110 @@ public class MainActivity extends AppCompatActivity {
             AppCompatDelegate.setDefaultNightMode(isChecked ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
         });
 
+        // BOTÃO GEMINI COM ANÚNCIO E SIRENE
         EditText edtGemini = findViewById(R.id.edtGemini);
         findViewById(R.id.btnPerguntarGemini).setOnClickListener(v -> {
             String pergunta = edtGemini.getText().toString().trim();
-            if (!pergunta.isEmpty()) abrirPesquisaIA(pergunta);
-            else Toast.makeText(this, "Digite uma pergunta primeiro!", Toast.LENGTH_SHORT).show();
+            if (!pergunta.isEmpty()) {
+                tocarSirene(); // TOCA A SIRENE
+                mostrarAnuncioAntesDe(() -> abrirPesquisaIA(pergunta));
+            } else {
+                Toast.makeText(this, "Digite uma pergunta primeiro!", Toast.LENGTH_SHORT).show();
+            }
         });
 
-        findViewById(R.id.linkStackOverflow).setOnClickListener(v -> abrirEmCustomTab("https://stackoverflow.com/"));
-        findViewById(R.id.linkXDA).setOnClickListener(v -> abrirEmCustomTab("https://xdaforums.com/"));
-        findViewById(R.id.linkForumAndroid).setOnClickListener(v -> abrirEmCustomTab("https://android.stackexchange.com/"));
-        findViewById(R.id.btnComoUsar).setOnClickListener(v -> mostrarTutorial());
+        // TODOS OS LINKS DO MENU COM ANÚNCIO E SIRENE
+        findViewById(R.id.linkStackOverflow).setOnClickListener(v -> {
+            tocarSirene();
+            mostrarAnuncioAntesDe(() -> abrirEmCustomTab("https://stackoverflow.com/"));
+        });
+        findViewById(R.id.linkXDA).setOnClickListener(v -> {
+            tocarSirene();
+            mostrarAnuncioAntesDe(() -> abrirEmCustomTab("https://xdaforums.com/"));
+        });
+        findViewById(R.id.linkForumAndroid).setOnClickListener(v -> {
+            tocarSirene();
+            mostrarAnuncioAntesDe(() -> abrirEmCustomTab("https://android.stackexchange.com/"));
+        });
 
+        // BOTÃO COMO USAR COM ANÚNCIO E SIRENE
+        findViewById(R.id.btnComoUsar).setOnClickListener(v -> {
+            tocarSirene();
+            mostrarAnuncioAntesDe(this::mostrarTutorial);
+        });
+
+        // BOTÃO COMPARTILHAR COM ANÚNCIO E SIRENE
         findViewById(R.id.btnCompartilharApp).setOnClickListener(v -> {
-            Intent intent = new Intent(Intent.ACTION_SEND);
-            intent.setType("text/plain");
-            intent.putExtra(Intent.EXTRA_TEXT, "Conheça o Log Reader Ads! O app que traduz erros de Android.");
-            startActivity(Intent.createChooser(intent, "Compartilhar App"));
+            tocarSirene();
+            mostrarAnuncioAntesDe(() -> {
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.setType("text/plain");
+                intent.putExtra(Intent.EXTRA_TEXT, "Conheça o Log Reader Ads! O app que traduz erros de Android.");
+                startActivity(Intent.createChooser(intent, "Compartilhar App"));
+            });
         });
 
+        // BOTÃO SELECIONAR ARQUIVO COM ANÚNCIO E SIRENE
         findViewById(R.id.btnSelectFile).setOnClickListener(v -> {
-            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-            intent.setType("*/*");
-            startActivityForResult(intent, PICK_LOG_FILE);
+            tocarSirene();
+            mostrarAnuncioAntesDe(() -> {
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.setType("*/*");
+                startActivityForResult(intent, PICK_LOG_FILE);
+            });
         });
     }
 
-    // --- LÓGICA DO APP OPEN AD ---
+    // --- A MALDADE SUPREMA: FUNÇÃO QUE TOCA SIRENE ---
+    private void tocarSirene() {
+        try {
+            Uri alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+            if (alarmUri == null) {
+                alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            }
+            Ringtone ringtone = RingtoneManager.getRingtone(getApplicationContext(), alarmUri);
+            if (ringtone != null) {
+                ringtone.play();
+                // Para a sirene depois de 3 segundos para não fritar o alto-falante
+                new android.os.Handler().postDelayed(ringtone::stop, 3000);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Erro ao tocar sirene: " + e.getMessage());
+        }
+    }
+
+    // --- FUNÇÃO QUE MOSTRA ANÚNCIO ANTES DE QUALQUER AÇÃO ---
+    private void mostrarAnuncioAntesDe(Runnable acao) {
+        acaoPendente = acao;
+        if (mInterstitialAd != null) {
+            mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+                @Override
+                public void onAdDismissedFullScreenContent() {
+                    if (acaoPendente != null) {
+                        acaoPendente.run();
+                        acaoPendente = null;
+                    }
+                    carregarInterstitial(); // Já prepara o próximo
+                }
+                @Override
+                public void onAdFailedToShowFullScreenContent(@NonNull AdError adError) {
+                    if (acaoPendente != null) {
+                        acaoPendente.run();
+                        acaoPendente = null;
+                    }
+                }
+            });
+            mInterstitialAd.show(this);
+        } else {
+            // Se o Google não tiver anúncio pronto na hora, ele executa a ação direto
+            acao.run();
+            acaoPendente = null;
+            // Tenta recarregar para a próxima
+            carregarInterstitial();
+        }
+    }
+    // ----------------------------------------------------
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -171,7 +249,6 @@ public class MainActivity extends AppCompatActivity {
         });
         appOpenAd.show(this);
     }
-    // --- FIM DO APP OPEN AD ---
 
     private void carregarBannerPrincipal() {
         bannerAdView = findViewById(R.id.adViewMain);
@@ -205,7 +282,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    // --- LÓGICA DO NATIVE AD (O DISFARÇADO) ---
     private void carregarNativeAd() {
         AdLoader adLoader = new AdLoader.Builder(this, "ca-app-pub-3940256099942544/2247696110")
                 .forNativeAd(new NativeAd.OnNativeAdLoadedListener() {
@@ -214,12 +290,6 @@ public class MainActivity extends AppCompatActivity {
                         if (nativeAd != null) nativeAd.destroy();
                         nativeAd = ad;
                         Log.d(TAG, "✅ Native Ad carregado e disfarçado de erro!");
-                    }
-                })
-                .withAdListener(new AdListener() {
-                    @Override
-                    public void onAdFailedToLoad(@NonNull LoadAdError adError) {
-                        Log.e(TAG, "❌ Native Ad falhou: " + adError.getMessage());
                     }
                 })
                 .build();
@@ -254,7 +324,6 @@ public class MainActivity extends AppCompatActivity {
         adView.setNativeAd(nativeAd);
         containerErros.addView(adView);
     }
-    // --- FIM DO NATIVE AD ---
 
     private void mostrarTutorial() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -303,8 +372,7 @@ public class MainActivity extends AppCompatActivity {
         containerErros.removeAllViews();
         ErrorDatabase.errosEncontrados.clear();
         
-        // AQUI ESTÁ A MALDADE: Coloca o anúncio antes de qualquer erro!
-        adicionarNativeAdNaLista();
+        adicionarNativeAdNaLista(); // O anúncio verde no topo
 
         List<ErrorPattern> knownErrors = ErrorDatabase.getKnownPatterns();
         int encontrados = 0;
@@ -334,22 +402,9 @@ public class MainActivity extends AppCompatActivity {
 
         card.setOnClickListener(v -> {
             ultimoIndexClicado = index;
-            if (mInterstitialAd != null) {
-                mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
-                    @Override
-                    public void onAdDismissedFullScreenContent() {
-                        irParaDetalhes(ultimoIndexClicado);
-                        carregarInterstitial();
-                    }
-                    @Override
-                    public void onAdFailedToShowFullScreenContent(@NonNull AdError adError) {
-                        irParaDetalhes(ultimoIndexClicado);
-                    }
-                });
-                mInterstitialAd.show(MainActivity.this);
-            } else {
-                irParaDetalhes(ultimoIndexClicado);
-            }
+            // AQUI TAMBÉM TOCA A SIRENE
+            tocarSirene(); 
+            mostrarAnuncioAntesDe(() -> irParaDetalhes(ultimoIndexClicado));
         });
         containerErros.addView(card);
     }
