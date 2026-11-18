@@ -157,13 +157,24 @@
                 android:backgroundTint="#1976D2"
                 android:layout_marginBottom="12dp"/>
 
-            <TextView
+                        <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Versão 2.0 - Manual do Mundo para Idiotas"
                 android:textColor="#888888"
                 android:textSize="12sp"
                 android:layout_marginTop="16dp"/>
-        </LinearLayout>
-    </ScrollView>
-</androidx.drawerlayout.widget.DrawerLayout>
+
+            <!-- BANNER NO MENU LATERAL -->
+            <com.google.android.gms.ads.AdView
+                xmlns:ads="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/adViewDrawerMain"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                ads:adSize="BANNER"
+                ads:adUnitId="ca-app-pub-3940256099942544/6300978111" />
+
+        </LinearLayout> <!-- Fecha o LinearLayout do menu -->
+    </ScrollView> <!-- Fecha o ScrollView do menu -->
+</androidx.drawerlayout.widget.DrawerLayout> <!-- Fecha a tela toda -->
