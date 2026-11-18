@@ -29,6 +29,7 @@ import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.FullScreenContentCallback;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.appopen.AppOpenAd;
 import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import java.io.BufferedReader;
@@ -49,6 +50,11 @@ public class MainActivity extends AppCompatActivity {
     private InterstitialAd mInterstitialAd;
     private int ultimoIndexClicado = -1;
 
+    // Variáveis do App Open Ad
+    private AppOpenAd appOpenAd = null;
+    private boolean isLoadingAd = false;
+    private boolean isShowingAd = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         prefs = getSharedPreferences("config", MODE_PRIVATE);
@@ -58,13 +64,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Inicializa o AdMob com log
         MobileAds.initialize(this, initializationStatus -> {
-            Log.d(TAG, "MobileAds inicializado: " + initializationStatus.getAdapterStatusMap());
+            Log.d(TAG, "MobileAds inicializado");
         });
 
         carregarBanner();
         carregarInterstitial();
+        carregarAppOpenAd();
 
         ErrorDatabase.sincronizarNuvem(this);
 
@@ -95,7 +101,6 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.linkStackOverflow).setOnClickListener(v -> abrirEmCustomTab("https://stackoverflow.com/"));
         findViewById(R.id.linkXDA).setOnClickListener(v -> abrirEmCustomTab("https://xdaforums.com/"));
         findViewById(R.id.linkForumAndroid).setOnClickListener(v -> abrirEmCustomTab("https://android.stackexchange.com/"));
-
         findViewById(R.id.btnComoUsar).setOnClickListener(v -> mostrarTutorial());
 
         findViewById(R.id.btnCompartilharApp).setOnClickListener(v -> {
@@ -112,35 +117,71 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void carregarBanner() {
-        bannerAdView = findViewById(R.id.adViewMain);
+    // --- LÓGICA DO APP OPEN AD ---
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mostrarAppOpenSeDisponivel();
+    }
 
-        // Listener para descobrir POR QUE o banner não carrega
-        bannerAdView.setAdListener(new AdListener() {
+    private void carregarAppOpenAd() {
+        if (isLoadingAd || isAdAvailable()) return;
+        isLoadingAd = true;
+        // ID de teste oficial do Google para App Open
+        String adUnitId = "ca-app-pub-3940256099942544/9257395921";
+        AdRequest request = new AdRequest.Builder().build();
+        
+        AppOpenAd.load(this, adUnitId, request, new AppOpenAd.AppOpenAdLoadCallback() {
             @Override
-            public void onAdLoaded() {
-                Log.d(TAG, "✅ BANNER CARREGOU com sucesso!");
+            public void onAdLoaded(@NonNull AppOpenAd ad) {
+                appOpenAd = ad;
+                isLoadingAd = false;
+                Log.d(TAG, "✅ App Open carregado");
             }
-
             @Override
             public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                Log.e(TAG, "❌ BANNER FALHOU. Código: " + loadAdError.getCode()
-                        + " | Domínio: " + loadAdError.getDomain()
-                        + " | Mensagem: " + loadAdError.getMessage());
-            }
-
-            @Override
-            public void onAdImpression() {
-                Log.d(TAG, "👁️ BANNER foi exibido (impressão registrada)");
-            }
-
-            @Override
-            public void onAdClicked() {
-                Log.d(TAG, "👆 BANNER foi clicado");
+                isLoadingAd = false;
+                Log.e(TAG, "❌ App Open falhou: " + loadAdError.getMessage());
             }
         });
+    }
 
-        Log.d(TAG, "Solicitando banner...");
+    private boolean isAdAvailable() {
+        return appOpenAd != null;
+    }
+
+    private void mostrarAppOpenSeDisponivel() {
+        if (isShowingAd || !isAdAvailable()) {
+            carregarAppOpenAd();
+            return;
+        }
+        isShowingAd = true;
+        appOpenAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+            @Override
+            public void onAdDismissedFullScreenContent() {
+                appOpenAd = null;
+                isShowingAd = false;
+                carregarAppOpenAd(); // Já deixa o próximo engatilhado
+            }
+            @Override
+            public void onAdFailedToShowFullScreenContent(@NonNull AdError adError) {
+                appOpenAd = null;
+                isShowingAd = false;
+                carregarAppOpenAd();
+            }
+        });
+        appOpenAd.show(this);
+    }
+    // --- FIM DO APP OPEN AD ---
+
+    private void carregarBanner() {
+        bannerAdView = findViewById(R.id.adViewMain);
+        bannerAdView.setAdListener(new AdListener() {
+            @Override
+            public void onAdLoaded() { Log.d(TAG, "✅ BANNER CARREGOU"); }
+            @Override
+            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) { Log.e(TAG, "❌ BANNER FALHOU: " + loadAdError.getMessage()); }
+        });
         AdRequest adRequest = new AdRequest.Builder().build();
         bannerAdView.loadAd(adRequest);
     }
@@ -148,23 +189,17 @@ public class MainActivity extends AppCompatActivity {
     private void carregarInterstitial() {
         String adUnitId = "ca-app-pub-3940256099942544/1033173712";
         AdRequest adRequest = new AdRequest.Builder().build();
-
-        Log.d(TAG, "Solicitando interstitial...");
-        InterstitialAd.load(this, adUnitId, adRequest,
-            new InterstitialAdLoadCallback() {
-                @Override
-                public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
-                    mInterstitialAd = interstitialAd;
-                    Log.d(TAG, "✅ INTERSTITIAL carregado e pronto");
-                }
-
-                @Override
-                public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                    mInterstitialAd = null;
-                    Log.e(TAG, "❌ INTERSTITIAL FALHOU. Código: " + loadAdError.getCode()
-                            + " | Mensagem: " + loadAdError.getMessage());
-                }
-            });
+        InterstitialAd.load(this, adUnitId, adRequest, new InterstitialAdLoadCallback() {
+            @Override
+            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                mInterstitialAd = interstitialAd;
+                Log.d(TAG, "✅ INTERSTITIAL PRONTO");
+            }
+            @Override
+            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                mInterstitialAd = null;
+            }
+        });
     }
 
     private void mostrarTutorial() {
@@ -172,13 +207,9 @@ public class MainActivity extends AppCompatActivity {
         LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.dialog_tutorial, null);
         builder.setView(dialogView);
-
         AlertDialog dialog = builder.create();
-        if (dialog.getWindow() != null) {
-            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-        }
+        if (dialog.getWindow() != null) dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         dialog.show();
-
         dialogView.findViewById(R.id.btnEntendi).setOnClickListener(v -> dialog.dismiss());
     }
 
@@ -222,7 +253,6 @@ public class MainActivity extends AppCompatActivity {
         ErrorDatabase.errosEncontrados.clear();
         List<ErrorPattern> knownErrors = ErrorDatabase.getKnownPatterns();
         int encontrados = 0;
-
         for (int i = 0; i < knownErrors.size(); i++) {
             ErrorPattern err = knownErrors.get(i);
             if (content.toLowerCase().contains(err.pattern.toLowerCase())) {
@@ -231,27 +261,16 @@ public class MainActivity extends AppCompatActivity {
                 encontrados++;
             }
         }
-
-        if (encontrados == 0) {
-            tvSummary.setText("Nenhum erro conhecido encontrado neste log.");
-        } else {
-            tvSummary.setText("Encontramos " + encontrados + " erro(s) que podem ser a causa do problema:");
-        }
+        if (encontrados == 0) tvSummary.setText("Nenhum erro conhecido encontrado neste log.");
+        else tvSummary.setText("Encontramos " + encontrados + " erro(s) que podem ser a causa do problema:");
     }
 
     private void criarCartaoDeErro(ErrorPattern err, int index) {
         Button card = new Button(this);
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         params.setMargins(0, 0, 0, 16);
         card.setLayoutParams(params);
-
-        if (err.severity.equals("CRITICO")) {
-            card.setBackgroundColor(0xFF8B0000);
-        } else {
-            card.setBackgroundColor(0xFFFF8C00);
-        }
-
+        card.setBackgroundColor(err.severity.equals("CRITICO") ? 0xFF8B0000 : 0xFFFF8C00);
         card.setTextColor(0xFFFFFFFF);
         card.setTextSize(16f);
         card.setGravity(Gravity.CENTER_VERTICAL | Gravity.START);
@@ -260,30 +279,23 @@ public class MainActivity extends AppCompatActivity {
 
         card.setOnClickListener(v -> {
             ultimoIndexClicado = index;
-
             if (mInterstitialAd != null) {
-                Log.d(TAG, "Mostrando interstitial...");
                 mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
                     @Override
                     public void onAdDismissedFullScreenContent() {
-                        Log.d(TAG, "Interstitial fechado, indo para detalhes");
                         irParaDetalhes(ultimoIndexClicado);
                         carregarInterstitial();
                     }
-
                     @Override
                     public void onAdFailedToShowFullScreenContent(@NonNull AdError adError) {
-                        Log.e(TAG, "❌ Interstitial falhou ao mostrar: " + adError.getMessage());
                         irParaDetalhes(ultimoIndexClicado);
                     }
                 });
                 mInterstitialAd.show(MainActivity.this);
             } else {
-                Log.d(TAG, "Sem interstitial pronto, indo direto para detalhes");
                 irParaDetalhes(ultimoIndexClicado);
             }
         });
-
         containerErros.addView(card);
     }
 
