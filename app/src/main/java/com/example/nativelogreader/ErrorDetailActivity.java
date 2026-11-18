@@ -1,10 +1,10 @@
 package com.example.nativelogreader;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -12,21 +12,33 @@ import android.widget.PopupMenu;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import java.util.List;
 
 public class ErrorDetailActivity extends AppCompatActivity {
     private int currentIndex = 0;
     private List<ErrorPattern> lista;
     private DrawerLayout drawerLayout;
+    private static final String TAG = "AdMobDebugDetalhe";
+    
+    private InterstitialAd mInterstitialAd;
+    private boolean deveVoltarDepoisDoAnuncio = false;
+    private boolean deveAbrirGeminiDepoisDoAnuncio = false;
+    private String perguntaGeminiPendente = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,16 +46,15 @@ public class ErrorDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_error_detail);
 
         MobileAds.initialize(this, initializationStatus -> {});
-        AdView bannerAdView = findViewById(R.id.adViewDetail);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        bannerAdView.loadAd(adRequest);
+        carregarBanner();
+        carregarInterstitial();
 
         drawerLayout = findViewById(R.id.drawerLayoutDetalhe);
         lista = ErrorDatabase.errosEncontrados;
         currentIndex = getIntent().getIntExtra("index", 0);
         if (currentIndex < 0 || currentIndex >= lista.size()) currentIndex = 0;
 
-        findViewById(R.id.btnVoltar).setOnClickListener(v -> finish());
+        findViewById(R.id.btnVoltar).setOnClickListener(v -> tentarSair());
         findViewById(R.id.btnMenuLateralDetalhe).setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
 
         SharedPreferences prefs = getSharedPreferences("config", MODE_PRIVATE);
@@ -56,10 +67,29 @@ public class ErrorDetailActivity extends AppCompatActivity {
         });
 
         EditText edtGemini = findViewById(R.id.edtGeminiDetalhe);
+        
+        // INTERSTITIAL NO BOTÃO DO GEMINI
         findViewById(R.id.btnPerguntarGeminiDetalhe).setOnClickListener(v -> {
             String pergunta = edtGemini.getText().toString().trim();
             if (!pergunta.isEmpty()) {
-                abrirPesquisaIA(pergunta);
+                perguntaGeminiPendente = pergunta;
+                if (mInterstitialAd != null) {
+                    deveAbrirGeminiDepoisDoAnuncio = true;
+                    mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+                        @Override
+                        public void onAdDismissedFullScreenContent() {
+                            abrirPesquisaIA(perguntaGeminiPendente);
+                            carregarInterstitial(); // Recarrega para a próxima
+                        }
+                        @Override
+                        public void onAdFailedToShowFullScreenContent(@NonNull AdError adError) {
+                            abrirPesquisaIA(perguntaGeminiPendente);
+                        }
+                    });
+                    mInterstitialAd.show(this);
+                } else {
+                    abrirPesquisaIA(pergunta); // Se não tiver ad, abre direto
+                }
             } else {
                 Toast.makeText(this, "Digite uma pergunta!", Toast.LENGTH_SHORT).show();
             }
@@ -78,6 +108,57 @@ public class ErrorDetailActivity extends AppCompatActivity {
             });
             popup.show();
         });
+    }
+
+    private void carregarBanner() {
+        AdView bannerAdView = findViewById(R.id.adViewDetail);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        bannerAdView.loadAd(adRequest);
+    }
+
+    private void carregarInterstitial() {
+        String adUnitId = "ca-app-pub-3940256099942544/1033173712";
+        AdRequest adRequest = new AdRequest.Builder().build();
+        InterstitialAd.load(this, adUnitId, adRequest, new InterstitialAdLoadCallback() {
+            @Override
+            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                mInterstitialAd = interstitialAd;
+                Log.d(TAG, "✅ Interstitial carregado na tela de detalhes");
+            }
+            @Override
+            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                mInterstitialAd = null;
+                Log.e(TAG, "❌ Interstitial falhou: " + loadAdError.getMessage());
+            }
+        });
+    }
+
+    private void tentarSair() {
+        if (mInterstitialAd != null) {
+            deveVoltarDepoisDoAnuncio = true;
+            mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+                @Override
+                public void onAdDismissedFullScreenContent() {
+                    if (deveVoltarDepoisDoAnuncio) finish();
+                }
+                @Override
+                public void onAdFailedToShowFullScreenContent(@NonNull AdError adError) {
+                    finish();
+                }
+            });
+            mInterstitialAd.show(this);
+        } else {
+            finish();
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            tentarSair();
+        }
     }
 
     @Override
