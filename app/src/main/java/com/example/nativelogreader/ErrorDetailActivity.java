@@ -1,5 +1,6 @@
 package com.example.nativelogreader;
 
+import android.annotation.SuppressLint; // IMPORT ADICIONADO
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.net.Uri;
@@ -152,6 +153,8 @@ public class ErrorDetailActivity extends AppCompatActivity {
         }
     }
 
+    // A ANOTAÇÃO ABAIXO AVISA O ANDROID PARA NÃO RECLAMAR DO BOTÃO DE VOLTAR
+    @SuppressLint("MissingSuperCall")
     @Override
     public void onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
